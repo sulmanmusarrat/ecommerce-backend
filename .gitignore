@@ -1,0 +1,20 @@
+# Node modules and build output
+node_modules/
+.next/
+.cache/
+dist/
+out/
+
+# Environment variables and logs
+.env
+*.log
+
+# OS files and editor folders
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Other large/unnecessary folders
+uploads/
+*.zip
+*.tar
