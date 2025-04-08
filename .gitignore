@@ -6,7 +6,6 @@ dist/
 out/
 
 # Environment variables and logs
-.env
 *.log
 
 # OS files and editor folders
