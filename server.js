@@ -10,25 +10,30 @@ const adminRoutes = require('./routes/adminRoutes');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-const allowedOrigins = [process.env.CLIENT_URL || 'http://localhost:3000'];
+// ✅ Allowed origins for CORS
+const allowedOrigins = [
+  process.env.CLIENT_URL || 'http://localhost:3000',
+  'https://rose-three-xi.vercel.app',
+];
+
 app.use(cors({
   origin: function (origin, callback) {
-    // allow requests with no origin (e.g. mobile apps or curl requests)
-    if (!origin) return callback(null, true);
+    if (!origin) return callback(null, true); // Allow non-browser tools like curl/postman
     if (allowedOrigins.includes(origin)) return callback(null, true);
+    console.log('❌ Blocked by CORS:', origin); // Debugging info
     return callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
 }));
+
 app.use(express.json());
 
-// Routes
+// ✅ Routes
 app.use('/api/products', productRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/orders', orderRoutes);
 
-// Start Server
+// ✅ Connect DB and start server
 connectDB().then(() => {
   app.listen(PORT, () =>
     console.log(`🚀 Server running at http://localhost:${PORT}`)
