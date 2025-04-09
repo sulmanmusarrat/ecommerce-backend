@@ -9,21 +9,23 @@ const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 
-// ✅ Define default local port
+// ✅ Default local port
 const LOCAL_PORT = 5000;
 const PORT = process.env.PORT || LOCAL_PORT;
 
-// ✅ Allowed frontend origins (add more if needed)
+// ✅ Allowed frontend origins (local + production)
 const allowedOrigins = [
-  process.env.CLIENT_URL || 'http://localhost:3000',
-  'https://rose-three-xi.vercel.app', // ✅ Your live Vercel frontend
+  'http://localhost:3000', // local development
+  process.env.CLIENT_URL || 'https://rose-three-xi.vercel.app', // production frontend
 ];
 
 // ✅ CORS Middleware
 app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like curl or Postman)
-    if (!origin) return callback(null, true);
+  origin: function (origin, callback) {
+    if (!origin) {
+      console.log('⚠️ No Origin header (e.g. Postman) — allowing');
+      return callback(null, true);
+    }
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     } else {
@@ -34,9 +36,10 @@ app.use(cors({
   credentials: true,
 }));
 
+// ✅ Middleware
 app.use(express.json());
 
-// ✅ Routes
+// ✅ API Routes
 app.use('/api/products', productRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/orders', orderRoutes);
@@ -46,7 +49,7 @@ app.get('/', (req, res) => {
   res.send(`✅ API running on port ${PORT}`);
 });
 
-// ✅ Connect DB & start server
+// ✅ Connect DB & Start Server
 connectDB()
   .then(() => {
     app.listen(PORT, () => {
