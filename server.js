@@ -11,14 +11,24 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+const allowedOrigins = [process.env.CLIENT_URL || 'http://localhost:3000'];
+app.use(cors({
+  origin: function (origin, callback) {
+    // allow requests with no origin (e.g. mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+}));
 app.use(express.json());
 
-// API Routes
+// Routes
 app.use('/api/products', productRoutes);
 app.use('/api/admin', adminRoutes);
-app.use('/orders', orderRoutes); // ✅ This makes POST /orders available
-// DB + Server
+app.use('/orders', orderRoutes);
+
+// Start Server
 connectDB().then(() => {
   app.listen(PORT, () =>
     console.log(`🚀 Server running at http://localhost:${PORT}`)
