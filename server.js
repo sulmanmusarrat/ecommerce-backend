@@ -13,18 +13,23 @@ const app = express();
 const LOCAL_PORT = 5000;
 const PORT = process.env.PORT || LOCAL_PORT;
 
-// ✅ Allowed frontend origins
+// ✅ Allowed frontend origins (add more if needed)
 const allowedOrigins = [
   process.env.CLIENT_URL || 'http://localhost:3000',
-  'https://rose-three-xi.vercel.app', // Your Vercel frontend
+  'https://rose-three-xi.vercel.app', // ✅ Your live Vercel frontend
 ];
 
+// ✅ CORS Middleware
 app.use(cors({
-  origin: function (origin, callback) {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like curl or Postman)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-    console.log('❌ Blocked by CORS:', origin);
-    return callback(new Error('Not allowed by CORS'));
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      console.warn('❌ Blocked by CORS:', origin);
+      return callback(new Error('Not allowed by CORS'));
+    }
   },
   credentials: true,
 }));
@@ -38,16 +43,16 @@ app.use('/api/orders', orderRoutes);
 
 // ✅ Health check route
 app.get('/', (req, res) => {
-  res.send(`API running on port ${PORT}`);
+  res.send(`✅ API running on port ${PORT}`);
 });
 
 // ✅ Connect DB & start server
 connectDB()
   .then(() => {
     app.listen(PORT, () => {
-      const env = process.env.NODE_ENV === 'production' ? '🌐 Live (Railway)' : '💻 Local';
-      console.log(`✅ MongoDB connected successfully`);
-      console.log(`🚀 ${env} server running at http://localhost:${PORT}`);
+      const isProd = process.env.NODE_ENV === 'production';
+      console.log('✅ MongoDB connected successfully');
+      console.log(`🚀 ${isProd ? '🌐 Live (Railway)' : '💻 Local'} server running at http://localhost:${PORT}`);
     });
   })
   .catch((err) => {
