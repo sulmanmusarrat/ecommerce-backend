@@ -16,7 +16,7 @@ const PORT = process.env.PORT || LOCAL_PORT;
 // ✅ Allowed frontend origins (local + production)
 const allowedOrigins = [
   'http://localhost:3000', // local development
-  process.env.CLIENT_URL || 'https://rose-three-xi.vercel.app', // production frontend
+  process.env.CLIENT_URL || 'https://roseboutique.vercel.app', // production frontend
 ];
 
 // ✅ CORS Middleware
